@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form method="post" novalidate>
+    {% csrf_token %}
+    {% crispy form form.helper %}
+</form>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    // Ocultar a div: div_paciente responsavel 
+    $(document).ready(function () {
+        if (document.getElementById("id_paciente_responsavel_1").checked) {
+            document.getElementById('div_responsavel').hidden = false
+        }
+        else {
+            document.getElementById('div_responsavel').hidden = true
+        }
+
+        apelido_inicial = document.getElementById('id_apelido').value;
+        console.log('p1')
+        console.log(apelido_inicial);
+        // console.log(document.forms[0])
+        // console.log(document.documentElement)
+        // console.log(document.children)
+
+        // const rootElement = document.documentElement;
+        // const firstTier = rootElement.childNodes;
+        // // firstTier is a NodeList of the direct children of the root element
+        // // such as <head> and <body>
+
+        // for (const child of firstTier) {
+        //     console.log(child)
+        
+    // }
+
+
+
+    });
+
+    // $("#id_apelido").change(function (e) {
+    //     e.preventDefault();
+    //     var apelido = $(this).val();
+    //     console.log('validando apelido.')
+    //     $.ajax({
+    //         type: 'GET',
+    //         url: "{% url 'verificar_apelido' %}",
+    //         data: { "apelido": apelido, "apelido_inicial": apelido_inicial},
+    //         success: function (response) {
+    //             // if not valid user, alert the user
+    //             if (!response["valid"]) {
+    //                 var apelido = $("#id_apelido");
+    //                 // apelido.val("")
+    //                 apelido.focus()
+    //                 alert("Já existe um outro paciente com este apelido.");
+    //             }
+    //         },
+    //         error: function (response) {
+    //             console.log(response)
+    //         }
+    //     })
+    // })
+
+    $("#_id_cpf").focusout(function (e) {
+        // $("#id_cpf").blur(function (e) {
+        e.preventDefault();
+        var cpf = $(this).val();
+        // GET AJAX request
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'validar_CPF' %}",
+            data: { "cpf": cpf },
+            success: function (response) {
+                if (!response["valid"]) {
+                    var cpf = $("#id_cpf");
+                    // cpf.val('')
+                    cpf.focus()
+                    alert("CPF inválido");
+                }
+            },
+            error: function (response) {
+                console.log(response)
+            }
+        })
+    })
+
+    $("#id_cep").focusout(function (e) {
+        e.preventDefault();
+        var cep = $(this).val();
+        // GET AJAX request
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'ler_cep' %}",
+            data: { "cep": cep },
+            success: function (response) {
+                if (response['status'] == 200) {
+                    console.log('ok')
+                    document.getElementById("id_endereco").value = response['address'];
+                    document.getElementById("id_bairro").value = response['district'];
+                    document.getElementById("id_cidade").value = response['city'];
+                    document.getElementById("id_uf").value = response['state'];
+                }
+                else {
+                    document.getElementById("id_endereco").value = "CEP Inexistente.";
+                    document.getElementById("id_bairro").value = "";
+                    document.getElementById("id_cidade").value = "";
+                    document.getElementById("id_uf").value = "";
+                }
+            },
+            error: function (response) {
+                console.log(response)
+            }
+        })
+    })
+
+    $('#id_paciente_responsavel_0').click(function (e) {
+        // e.preventDefault();
+        document.getElementById("id_nome_responsavel").value = ""
+        document.getElementById("id_cpf_responsavel").value = ""
+        document.getElementById("id_email_responsavel").value = ""
+        document.getElementById("id_celular_ddd_responsavel").value = ""
+        document.getElementById("id_celular_numero_responsavel").value = ""
+        document.getElementById("id_telefone_ddd_responsavel").value = ""
+        document.getElementById("id_telefone_numero_responsavel").value = ""
+
+        document.getElementById('div_responsavel').hidden = true
+    })
+
+    $('#id_paciente_responsavel_1').click(function (e) {
+        // e.preventDefault();
+        document.getElementById('div_responsavel').hidden = false
+    })
+
+</script>
+{% endblock javascript %}

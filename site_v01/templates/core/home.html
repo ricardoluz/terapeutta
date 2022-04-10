@@ -1,0 +1,10 @@
+{% extends './../base.html' %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<h3>{{ user.username }}, bem-vindo ao Terapeutta.</h3>
+{% else %}
+<h3>Faça o seu [Log in] ou [Registre uma conta].</h3>
+<!-- <a href="{% url 'teste' %}">Teste</a> -->
+{% endif %}
+{% endblock %}

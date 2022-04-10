@@ -1,0 +1,44 @@
+{% extends './../base.html' %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h3>Teste Modal</h3>
+{% endblock header %}
+
+{% block content %}
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    Teste popup
+</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" onclick="myFunction()">
+    Teste popup2
+</button>
+
+
+<p id="demo">xxx</p>
+
+<a class="checked" href="http://www.google.com">Click here</a>
+
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+
+
+    function myFunction() {
+        var txt;
+        if (confirm("Press a button!")) {
+            txt = "You pressed OK!";
+        } else {
+            txt = "You pressed Cancel!";
+        }
+        document.getElementById("demo").innerHTML = txt;
+    }
+
+
+
+</script>
+{% endblock %}

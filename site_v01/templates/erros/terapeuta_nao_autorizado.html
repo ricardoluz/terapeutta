@@ -1,0 +1,10 @@
+{% extends './../base.html' %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<h3>Operação não autorizada para {{ user.username }}</h3>
+{% else %}
+<h3>Operação não autorizada -> Faça o seu [Log in] ou [Registre uma conta].</h3>
+{% endif %}
+
+{% endblock %}

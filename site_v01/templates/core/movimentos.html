@@ -1,0 +1,54 @@
+{% extends './../base.html' %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h3>Movimentos de {{nome_paciente}} </h3>
+{% endblock header %}
+
+{% block content %}
+<table class="table table-hover w-50">
+    <thead>
+        <tr>
+            <th scope="col">Data</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Valor (R$)</th>
+            <th scope="col">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in form %}
+        <tr>
+            <th scope="row">{{ item.data_hora|date:'d/m/Y'}}</th>
+            <td>{{ item.tipo_operacao }}</td>
+            <td align="right">{{ item.valor_mov }}</td>
+            <td>
+                <a href="{% url 'core_editar_movimento' id_movimento=item.id %}">Editar</a>
+                <a href="#"
+                    onclick="confirmar_exclusao('#url_{{ item.id }}','Excluir movimento de {{ item.tipo_operacao }}')">Excluir</a>
+                <input width="1px" type="hidden" id="url_{{ item.id }}"
+                    data-url="{% url 'core_excluir_movimento' id_movimento=item.id %}" />
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <h3>Não há movimentos para o paciente até o momento</h3>
+            </li>
+            {% endfor %}
+    </tbody>
+</table>
+
+</br>
+<a href="{% url 'core_criar_movimentacao' id_paciente=id_paciente %}">+ Criar movimento</a>
+<input type=button class="btn" value="Voltar" onClick="window.history.back();return false;">
+</ul>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function confirmar_exclusao(url, msg) {
+        if (confirm(msg)) {
+            document.location.href = $(url).attr("data-url");;
+        }
+    }
+</script>
+{% endblock %}

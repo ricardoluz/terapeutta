@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moadl_popup</title>
+</head>
+
+<style>
+    body {
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    .btn {
+        cursor: pointer;
+        background-color: #fff;
+        border-radius: 4px;
+        font-size: large;
+    }
+
+    .btn:hover {
+        background: salmon;
+        cursor: pointer;
+    }
+
+    .modal1 {
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        background: darkgray;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: all .4s ease-in-out;
+    }
+
+    .container {
+        background: white;
+        width: 414px;
+        max-width: 90%;
+        position: relative;
+        border-radius: 9px;
+        padding: 38px 16px;
+        border-radius: 14px;
+        transform: translateY(-100%);
+        transition: all .4s ease-in;
+    }
+
+    .action {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .Box {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .modal1.Box .container {
+        transform: translateY(0);
+    }
+</style>
+
+
+<body>
+    <button class="btn" class id="one">Click this</button>
+    <div class="modal1">
+        <div class="container">
+            <h2>Welcome to IncludeHelp!!</h2>
+            <p> Before diving in, first login-</p>
+            <div class="action">
+                <button class="btn" class id="Login">Enter</button>
+                <button class="btn" class id="close">Close</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+	const trigger = document.querySelector('#one');
+	const exit = document.querySelector('#close');
+	const modalWrapper = document.querySelector('.modal1');
+
+	// Upon clicking "Click this" button, 
+	// modal popup appears.
+	trigger.addEventListener('click', function() {
+		modalWrapper.classList.add('Box');
+	})
+	// Upon clicking "Close", you will be 
+	// redirected to first page.
+	exit.addEventListener('click', function() {
+		modalWrapper.classList.remove('Box');
+	});
+</script>
+
+
+</html>

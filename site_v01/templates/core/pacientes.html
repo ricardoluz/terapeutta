@@ -1,0 +1,57 @@
+{% extends './../base.html' %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h1>Pacientes</h1>
+{% endblock header %}
+
+{% block content %}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Paciente</th>
+            <th scope="col">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in form %}
+        <tr>
+            <td>
+                <h4>
+                    <a href="{% url 'core_editar_paciente' id_paciente=item.id %}">{{ item }}</a>
+                </h4>
+            </td>
+            <td>
+                <a href="{% url 'core_listar_movimentos' id_paciente=item.id %}">[ Listar movimentos ]</a>
+                &nbsp;|&nbsp;
+                <a href="{% url 'core_criar_movimentacao' id_paciente=item.id %}">[ Criar movimento ]</a>
+                &nbsp;|&nbsp;
+                <!-- <a href="{% url 'core_excluir_paciente' id_paciente=item.id %}">[Excluir paciente]</a> -->
+                <a href="#"
+                    onclick="confirmar_exclusao('#url_{{ item.id }}','Excluir o paciente: {{ item }}')">[ Excluir paciente ]</a>
+                <input width="1px" type="hidden" id="url_{{ item.id }}"
+                    data-url="{% url 'core_excluir_paciente' id_paciente=item.id %}" />
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <h3>Não há pacientes cadastrado até o momento</h3>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</br>
+<h3><a href="{% url 'core_editar_paciente' id_paciente=0 %}">(+) Adicionar Cliente:</a></h3>
+</ul>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function confirmar_exclusao(url, msg) {
+        if (confirm(msg)) {
+            document.location.href = $(url).attr("data-url");;
+        }
+    }
+</script>
+{% endblock %}
