@@ -80,15 +80,7 @@ class TipoOperacao(models.Model):
 
 
 class Movimentacao(models.Model):
-    # class TipoOperacao(models.IntegerChoices):
-    #     CONSULTA = 0, "Consulta"
-    #     PAGAMENTO = 1, "Pagamento"
-
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, null=True)
-    # tipo_operacao = models.PositiveSmallIntegerField(
-    #     choices=TipoOperacao.choices
-    #     # default=TipoOperacao.CONSULTA
-    # )
     tipo_operacao = models.ForeignKey(TipoOperacao, null=False, on_delete=models.CASCADE)
     data_hora = models.DateTimeField(null=True)
     valor_mov = models.FloatField(null=True, blank=True)  # TODO: Rever este campo.
