@@ -17,7 +17,7 @@ def login_usuario(request):
     form = LoginUserForm()
 
     if request.method == "POST":
-        form = LoginUserForm(request="POST")
+        form = LoginUserForm(request = "POST")
         username = request.POST.get("username")
         password = request.POST.get("password")
 
