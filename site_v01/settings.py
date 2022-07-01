@@ -9,23 +9,29 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+from ntpath import join
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Ler as variáveis de ambiente.
+project_folder = str(BASE_DIR)+ '/venv/.env'
+load_dotenv(project_folder, verbose=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3wk0bwui)c)!h#)2)sxp7=&zan4q6wa(-_s3vfuz@-1pfx2i_g'
+SECRET_KEY= str(os.getenv('SECRET_KEY'))
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['54.234.223.208',]
+ALLOWED_HOSTS = ['54.234.223.208','127.0.0.1']
 
 
 # Application definition
