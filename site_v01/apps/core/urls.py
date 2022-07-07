@@ -2,15 +2,14 @@ from django.urls import path, include
 from .views import (
     home,
     teste,
-
     alterar_terapeuta_view,
-    verificar_apelido,
     erro_01,
     # ---------
     # Paciente
     listar_pacientes,
     editar_paciente_v01,
     excluir_paciente,
+    verificar_apelido,
     #
     # -----------
     # Movimentos
@@ -18,6 +17,13 @@ from .views import (
     editar_movimento,
     excluir_movimento,
     listar_movimentacoes,
+    #
+    # ------------
+    # Ordem de serviço
+    os_selecionar_movimentos,
+    #
+    # ------------
+    # Validações
     validar_CPF,
     ler_cep,
 )
@@ -26,9 +32,7 @@ urlpatterns = [
     path("", home, name="home"),
     path("accounts/", include("django.contrib.auth.urls")),
     path("erro", erro_01, name="erro_01"),
-
-    path("teste", teste, name='teste'),
-
+    path("teste", teste, name="teste"),
     path(
         "alterar_dados/<int:id>",
         alterar_terapeuta_view,
@@ -39,7 +43,9 @@ urlpatterns = [
         "paciente/<int:id_paciente>", editar_paciente_v01, name="core_editar_paciente"
     ),
     path(
-        "excluir/paciente/<int:id_paciente>", excluir_paciente, name="core_excluir_paciente"
+        "excluir/paciente/<int:id_paciente>",
+        excluir_paciente,
+        name="core_excluir_paciente",
     ),
     #
     path("get/ajax/validate/apelido", verificar_apelido, name="verificar_apelido"),
@@ -65,4 +71,14 @@ urlpatterns = [
         excluir_movimento,
         name="core_excluir_movimento",
     ),
+    #
+    # OrdemServico --------------------------------------------
+    #
+    path(
+        "ordemservico/<int:id_paciente>",
+        os_selecionar_movimentos,
+        name="core_os_selecionar_movimentos",
+    ),
+
+
 ]

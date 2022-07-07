@@ -1,0 +1,31 @@
+{% extends './../base.html' %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h3>Ordem de serviço - {{nome_paciente}}</h3>
+</br>
+<h4>Selecionar a movimentação</h4>
+{% endblock header %}
+
+{% block content %}
+
+<div>
+
+    <!-- <form method="POST" action="book"> -->
+    <form method="POST">
+    <!-- <form method="POST"> -->
+        {% csrf_token %}
+        {{formset.management_form|crispy}}
+
+        {% for form in formset%}
+        {{form}}
+        <hr>
+        {% endfor %}
+        <br />
+        <div>
+            <button type="submit" class="btn btn-danger btn-lg">Submit</button>
+        </div>
+
+    </form>
+
+{% endblock %}

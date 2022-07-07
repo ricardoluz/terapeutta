@@ -1,7 +1,5 @@
 """ Modelos """
-from email.utils import formatdate
-from re import T
-from tabnanny import verbose
+from tkinter import CASCADE, N
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -79,11 +77,27 @@ class TipoOperacao(models.Model):
         return self.desc_operacao
 
 
+class OrdemServico(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, null=True)
+    data_ordem = models.DateTimeField(null=True)
+    data_pagamento = models.DateTimeField(null=True)
+
+    class Meta:
+        verbose_name = "OrdemServico"
+        verbose_name_plural = "OrdemServicos"
+
+
+
 class Movimentacao(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, null=True)
     tipo_operacao = models.ForeignKey(TipoOperacao, null=False, on_delete=models.CASCADE)
     data_hora = models.DateTimeField(null=True)
     valor_mov = models.FloatField(null=True, blank=True)  # TODO: Rever este campo.
     observacao = models.TextField(null=True, blank=True, max_length=120)
+    bln_selecionado = models.BooleanField(default=False)
+    ordem_servico = models.ForeignKey(OrdemServico,on_delete=models.SET_NULL, null=True)
 
+    class Meta:
+        verbose_name = "Movimentacao"
+        verbose_name_plural = "Movimentacoes"
 

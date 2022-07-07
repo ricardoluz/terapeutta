@@ -133,6 +133,7 @@ class PacienteForm(forms.ModelForm):
         max_length=40,
         required=True,
     )
+
     apelido = forms.CharField(
         label="Apelido",
         max_length=40,
@@ -465,7 +466,7 @@ class MovimentacaoForm(forms.ModelForm):
 
     valor_mov = forms.FloatField(
         label="Valor",
-        min_value=0.0,
+        min_value=0,
         required=True,
     )
 
@@ -497,3 +498,84 @@ class MovimentacaoForm(forms.ModelForm):
                 ),
             )
         )
+
+
+class OSSelecaoForm(forms.ModelForm):
+    class Meta:
+        model = Movimentacao
+
+        fields = [
+            "tipo_operacao",
+            "data_hora",
+            # "valor_mov",
+        ]
+    
+    tipo_operacao = forms.ModelChoiceField(
+        queryset=TipoOperacao.objects.all(), label="Operação"
+    )
+
+    data_hora = forms.DateField(
+        input_formats=["%d/%m/%Y", "%Y-%m-%d"],
+        label="Data",
+        initial=datetime.date.today().strftime("%Y-%m-%d"),
+        widget=DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
+        localize=True,
+    )
+
+class OSSelecaoForm_xxx(forms.ModelForm):
+    class Meta:
+        model = Movimentacao
+
+        fields = [
+            "tipo_operacao",
+            "data_hora",
+            "valor_mov",
+        ]
+
+    tipo_operacao = forms.ModelChoiceField(
+        queryset=TipoOperacao.objects.all(), label="Operação"
+    )
+
+    data_hora = forms.DateField(
+        input_formats=["%d/%m/%Y", "%Y-%m-%d"],
+        label="Data",
+        initial=datetime.date.today().strftime("%Y-%m-%d"),
+        widget=DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
+        localize=True,
+    )
+
+    valor_mov = forms.FloatField(
+        label="Valor",
+        min_value=0,
+        required=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(MovimentacaoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = "id-Movimentacao"
+        self.helper.form_class = "blueForms"
+        self.helper.form_method = "post"
+        self.helper.form_action = "submit_survey"
+
+        self.helper.layout = Layout(
+            Fieldset(
+                "Movimentação",
+                Row(
+                    Column("tipo_operacao", css_class="form-group col-md-3 mb-0"),
+                    Column("data_hora", css_class="form-group col-md-2 mb-0"),
+                    PrependedText(
+                        "valor_mov", "R$", ".00", css_class="form-group col-md-6 mb-0"
+                    ),
+                ),
+                FormActions(
+                    Submit("submit", "Salvar movimento"),
+                    Button(
+                        "cancel",
+                        "Voltar",
+                        onclick="window.history.back();return false;",
+                    ),
+                ),
+            )
+        )
+

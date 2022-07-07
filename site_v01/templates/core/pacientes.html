@@ -24,13 +24,20 @@
             <td>
                 <a href="{% url 'core_listar_movimentos' id_paciente=item.id %}">[ Listar movimentos ]</a>
                 &nbsp;|&nbsp;
+
                 <a href="{% url 'core_criar_movimentacao' id_paciente=item.id %}">[ Criar movimento ]</a>
                 &nbsp;|&nbsp;
-                <!-- <a href="{% url 'core_excluir_paciente' id_paciente=item.id %}">[Excluir paciente]</a> -->
-                <a href="#"
-                    onclick="confirmar_exclusao('#url_{{ item.id }}','Excluir o paciente: {{ item }}')">[ Excluir paciente ]</a>
-                <input width="1px" type="hidden" id="url_{{ item.id }}"
+
+                <a href="{% url 'core_os_selecionar_movimentos' id_paciente=item.id %}">[ Criar Ordem Servico]</a>
+                &nbsp;|&nbsp;
+
+                <a href="#" onclick="confirmar_exclusao('#url_{{ item.id }}','Excluir o paciente: {{ item }}')">[
+                    Excluir paciente ]
+                </a>
+
+                <input width="5px" type="hidden" id="url_{{ item.id }}"
                     data-url="{% url 'core_excluir_paciente' id_paciente=item.id %}" />
+
             </td>
         </tr>
         {% empty %}
@@ -42,8 +49,8 @@
 </table>
 
 </br>
-<h3><a href="{% url 'core_editar_paciente' id_paciente=0 %}">(+) Adicionar Cliente:</a></h3>
-</ul>
+<h3><a href="{% url 'core_editar_paciente' id_paciente=0 %}">(+) [Adicionar Cliente]</a></h3>
+
 {% endblock %}
 
 {% block javascript %}

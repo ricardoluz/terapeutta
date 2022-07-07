@@ -1,9 +1,10 @@
-""" """
+""" core - Views """
 
-from email import message
+from operator import le
 from django.forms import ValidationError
 import requests
 import json
+from django.forms import formset_factory
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -15,7 +16,7 @@ from django.contrib import messages
 from ..autenticacao.decorators import allowed_users_v01
 from .decorators import terapeuta_eh_valido
 
-from .forms import TerapeutaFormCrispy, PacienteForm, MovimentacaoForm
+from .forms import OSSelecaoForm, TerapeutaFormCrispy, PacienteForm, MovimentacaoForm
 from .models import Terapeuta, Paciente, Movimentacao
 
 from ..bibliotecas.validar_cpf import verificar_cpf
@@ -129,7 +130,6 @@ def excluir_paciente(request, id_paciente):
 
 
 @allowed_users_v01()
-# @terapeuta_eh_valido
 def listar_movimentacoes(request, id_paciente):
 
     paciente = Paciente.objects.get(id=id_paciente)
@@ -203,6 +203,57 @@ def excluir_movimento(request, id_movimento):
 
     return redirect(request.META['HTTP_REFERER'])
 
+@allowed_users_v01()
+def os_selecionar_movimentos_tmp(request, id_paciente):
+
+    paciente = Paciente.objects.get(id=id_paciente)
+    form = Movimentacao.objects.filter(paciente=id_paciente).order_by("data_hora")
+
+    if request.method != "POST":
+        # form = Movimentacao.objects.filter(paciente=id_paciente).order_by("data_hora")
+        print('Leitura')
+    else:
+        # values = [value for name, value in request.POST.iteritems()]
+        for item in request.POST.keys():
+            print(item)
+        print(len(request.POST))
+        # form = request.POST
+        tmp = request.POST
+        for item in tmp:
+            print(item)
+
+        print('*'*80)    
+
+    context = {"form": form, "id_paciente": id_paciente}
+    context["nome_paciente"] =  paciente.nome
+
+    return render(request, "core/os_selecionar_movimentos.html", context)
+
+
+def os_selecionar_movimentos(request, id_paciente):
+    paciente = Paciente.objects.get(id=id_paciente)
+
+    if request.method=='POST':
+        print('1....')
+        Order=formset_factory(OSSelecaoForm,extra=3)
+        formset=Order(request.POST)
+        print(formset.is_valid())
+        print(formset)
+        if formset.is_valid():
+            for form in formset:
+                print('....')
+                # book_name=form.cleaned_data.get('name_book')
+                # author=form.cleaned_data.get('author')
+                # if book_name:
+                    # pass
+                    # Book(name_book=book_name,author=author).save()
+            return redirect("home")
+            return render(request,'core/os_selecionar_movimentos_tmp.html',{'formset':formset})
+    else:
+        Order=formset_factory(OSSelecaoForm,extra=3)
+        formset=Order()
+
+    return render(request,'core/os_selecionar_movimentos_tmp.html',{'formset':formset})
 
 # ----------------------------------
 # Views de verificacao.
