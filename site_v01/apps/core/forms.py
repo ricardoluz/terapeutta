@@ -1,14 +1,11 @@
 # from datetime import date, datetime
 import datetime
-from email import message
-from pyexpat.errors import messages
-# from tkinter import PIESLICE
-#
+
 
 from django import forms
 # from django.contrib import messages
-from django.forms import ValidationError
-from django.forms.widgets import DateInput
+from django.forms import ChoiceField, TextInput, ValidationError
+from django.forms.widgets import DateInput, ChoiceWidget
 from django.core.validators import RegexValidator
 from crispy_forms.helper import FormHelper
 
@@ -507,20 +504,63 @@ class OSSelecaoForm(forms.ModelForm):
         fields = [
             "tipo_operacao",
             "data_hora",
-            # "valor_mov",
+            "valor_mov",
         ]
     
     tipo_operacao = forms.ModelChoiceField(
-        queryset=TipoOperacao.objects.all(), label="Operação"
+        queryset=TipoOperacao.objects.all(),
+        label="",
+        disabled=True,
+        # widget=ChoiceWidget(format="", attrs={'style': 'width: 300px;'})
+        widget=forms.Select(attrs={'style': 'width: 300px; height: 50px;'})
     )
 
     data_hora = forms.DateField(
         input_formats=["%d/%m/%Y", "%Y-%m-%d"],
-        label="Data",
+        label="",
         initial=datetime.date.today().strftime("%Y-%m-%d"),
-        widget=DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
+        widget=DateInput(format="%Y-%m-%d", attrs={"type": "date",'style': 'width: 200px;'}),
         localize=True,
+        disabled=True,
     )
+
+    valor_mov = forms.FloatField(
+        label="",
+        disabled=True
+        # min_value=0,
+        # required=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(OSSelecaoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = "id-Movimentacao"
+        self.helper.form_class = "blueForms"
+        self.helper.form_method = "post"
+        self.helper.form_action = "submit_survey"
+
+        self.helper.layout = Layout(
+            Fieldset(
+                # "Movimentação",
+                Row(
+                    Column("tipo_operacao", css_class="form-group col-md-3 mb-0"),
+                    Column("data_hora", css_class="form-group col-md-2 mb-0"),
+                    PrependedText(
+                        "valor_mov", "R$", ".00", css_class="form-group col-md-6 mb-0"
+                    ),
+                ),
+                # FormActions(
+                #     Submit("submit", "Salvar movimento"),
+                #     Button(
+                #         "cancel",
+                #         "Voltar",
+                #         onclick="window.history.back();return false;",
+                #     ),
+                # ),
+            )
+        )
+
+
 
 class OSSelecaoForm_xxx(forms.ModelForm):
     class Meta:
@@ -533,7 +573,8 @@ class OSSelecaoForm_xxx(forms.ModelForm):
         ]
 
     tipo_operacao = forms.ModelChoiceField(
-        queryset=TipoOperacao.objects.all(), label="Operação"
+        queryset=TipoOperacao.objects.all(),
+        label="Operação",
     )
 
     data_hora = forms.DateField(

@@ -13,12 +13,12 @@
 
     <!-- <form method="POST" action="book"> -->
     <form method="POST">
-    <!-- <form method="POST"> -->
         {% csrf_token %}
         {{formset.management_form|crispy}}
 
-        {% for form in formset%}
-        {{form}}
+        {% for form in formset %}
+        <!-- {% crispy form %} -->
+        {{ form }}
         <hr>
         {% endfor %}
         <br />

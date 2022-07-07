@@ -1,7 +1,7 @@
 """ core - Views """
 
 from operator import le
-from django.forms import ValidationError
+from django.forms import ValidationError, modelformset_factory
 import requests
 import json
 from django.forms import formset_factory
@@ -232,26 +232,28 @@ def os_selecionar_movimentos_tmp(request, id_paciente):
 
 def os_selecionar_movimentos(request, id_paciente):
     paciente = Paciente.objects.get(id=id_paciente)
+    movimentos = Movimentacao.objects.filter(paciente=id_paciente).order_by("data_hora")
 
     if request.method=='POST':
+        OrdemSet = modelformset_factory(Movimentacao,OSSelecaoForm,extra=0)
         print('1....')
-        Order=formset_factory(OSSelecaoForm,extra=3)
-        formset=Order(request.POST)
-        print(formset.is_valid())
-        print(formset)
+        formset = OrdemSet(request.POST)
+
         if formset.is_valid():
             for form in formset:
-                print('....')
-                # book_name=form.cleaned_data.get('name_book')
-                # author=form.cleaned_data.get('author')
+                print(form.cleaned_data.get('tipo_operacao'))
+                print(form.cleaned_data.get('data_hora'))
+
                 # if book_name:
                     # pass
                     # Book(name_book=book_name,author=author).save()
             return redirect("home")
             return render(request,'core/os_selecionar_movimentos_tmp.html',{'formset':formset})
     else:
-        Order=formset_factory(OSSelecaoForm,extra=3)
-        formset=Order()
+
+        # Order = formset_factory(OSSelecaoForm, extra=3)
+        OrdemSet = modelformset_factory(Movimentacao,OSSelecaoForm,extra=0)
+        formset = OrdemSet(queryset=movimentos)
 
     return render(request,'core/os_selecionar_movimentos_tmp.html',{'formset':formset})
 
