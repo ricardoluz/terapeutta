@@ -1,10 +1,11 @@
 # from datetime import date, datetime
+from cProfile import label
 import datetime
 
 
 from django import forms
 # from django.contrib import messages
-from django.forms import ChoiceField, TextInput, ValidationError
+from django.forms import BooleanField, CheckboxInput, ChoiceField, TextInput, ValidationError
 from django.forms.widgets import DateInput, ChoiceWidget
 from django.core.validators import RegexValidator
 from crispy_forms.helper import FormHelper
@@ -12,7 +13,6 @@ from crispy_forms.helper import FormHelper
 from .models import Terapeuta, Paciente, Movimentacao, TipoOperacao
 from ..bibliotecas.validar_cpf import verificar_cpf
 
-# from crispy_forms.layout import Submit
 from crispy_forms.layout import (
     Layout,
     Fieldset,
@@ -145,7 +145,7 @@ class PacienteForm(forms.ModelForm):
 
     valor_padrao = forms.FloatField(
         label="Consulta",
-        min_value=0.0,
+        min_value=0,
         initial=100.0,
         required=False,
     )
@@ -502,6 +502,7 @@ class OSSelecaoForm(forms.ModelForm):
         model = Movimentacao
 
         fields = [
+            "bln_selecionado",
             "tipo_operacao",
             "data_hora",
             "valor_mov",
@@ -511,24 +512,28 @@ class OSSelecaoForm(forms.ModelForm):
         queryset=TipoOperacao.objects.all(),
         label="",
         disabled=True,
-        # widget=ChoiceWidget(format="", attrs={'style': 'width: 300px;'})
-        widget=forms.Select(attrs={'style': 'width: 300px; height: 50px;'})
+        widget=forms.Select(attrs={'style': 'width: 200px; height: 30px;'})
     )
 
     data_hora = forms.DateField(
-        input_formats=["%d/%m/%Y", "%Y-%m-%d"],
+        # input_formats=["%d/%m/%Y", "%Y-%m-%d"],
+        input_formats=["%d/%m/%Y"],
         label="",
-        initial=datetime.date.today().strftime("%Y-%m-%d"),
-        widget=DateInput(format="%Y-%m-%d", attrs={"type": "date",'style': 'width: 200px;'}),
+        widget=DateInput(format="%Y-%m-%d", attrs={"type": "date",'style': 'text-align: right'}),
         localize=True,
         disabled=True,
     )
 
     valor_mov = forms.FloatField(
         label="",
-        disabled=True
-        # min_value=0,
-        # required=True,
+        disabled=True,
+        widget=TextInput(attrs={'style': 'text-align: right'}),
+    )
+
+    bln_selecionado = forms.BooleanField(
+        label='',
+        required=False,
+        widget=CheckboxInput(attrs={'style': 'width: 60px; transform:scale(1.5, 1.5)'}),
     )
 
     def __init__(self, *args, **kwargs):
@@ -543,78 +548,12 @@ class OSSelecaoForm(forms.ModelForm):
             Fieldset(
                 # "Movimentação",
                 Row(
+                    # Column(InlineCheckboxes('bln_selecionado')),
+                    Column(InlineRadios('bln_selecionado')),
                     Column("tipo_operacao", css_class="form-group col-md-3 mb-0"),
                     Column("data_hora", css_class="form-group col-md-2 mb-0"),
                     PrependedText(
                         "valor_mov", "R$", ".00", css_class="form-group col-md-6 mb-0"
-                    ),
-                ),
-                # FormActions(
-                #     Submit("submit", "Salvar movimento"),
-                #     Button(
-                #         "cancel",
-                #         "Voltar",
-                #         onclick="window.history.back();return false;",
-                #     ),
-                # ),
-            )
-        )
-
-
-
-class OSSelecaoForm_xxx(forms.ModelForm):
-    class Meta:
-        model = Movimentacao
-
-        fields = [
-            "tipo_operacao",
-            "data_hora",
-            "valor_mov",
-        ]
-
-    tipo_operacao = forms.ModelChoiceField(
-        queryset=TipoOperacao.objects.all(),
-        label="Operação",
-    )
-
-    data_hora = forms.DateField(
-        input_formats=["%d/%m/%Y", "%Y-%m-%d"],
-        label="Data",
-        initial=datetime.date.today().strftime("%Y-%m-%d"),
-        widget=DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
-        localize=True,
-    )
-
-    valor_mov = forms.FloatField(
-        label="Valor",
-        min_value=0,
-        required=True,
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(MovimentacaoForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_id = "id-Movimentacao"
-        self.helper.form_class = "blueForms"
-        self.helper.form_method = "post"
-        self.helper.form_action = "submit_survey"
-
-        self.helper.layout = Layout(
-            Fieldset(
-                "Movimentação",
-                Row(
-                    Column("tipo_operacao", css_class="form-group col-md-3 mb-0"),
-                    Column("data_hora", css_class="form-group col-md-2 mb-0"),
-                    PrependedText(
-                        "valor_mov", "R$", ".00", css_class="form-group col-md-6 mb-0"
-                    ),
-                ),
-                FormActions(
-                    Submit("submit", "Salvar movimento"),
-                    Button(
-                        "cancel",
-                        "Voltar",
-                        onclick="window.history.back();return false;",
                     ),
                 ),
             )

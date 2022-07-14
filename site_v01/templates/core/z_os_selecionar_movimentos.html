@@ -1,0 +1,72 @@
+{% extends './../base.html' %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h3>Ordem de serviço - {{nome_paciente}}</h3>
+</br>
+<h4>Selecionar a movimentação</h4>
+{% endblock header %}
+
+{% block content %}
+
+<div class="table-responsive">
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        <table class="table table-hover w-50">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Selecionar</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Valor (R$)</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in form %}
+                <tr>
+                    <td align="center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="false" id="os_simnao_{{item.id}}">
+                            <input width="15px" type="text" value="{{item.id}} " id="{{ item.id }}"
+                        </div>
+                    </td>
+                    <td>{{ item.data_hora|date:'d/m/Y'}}</td>
+                    <td>{{ item.tipo_operacao }}</td>
+                    <td align="right">{{ item.valor_mov }}</td>
+                    <td>
+                        <!-- <a href="{% url 'core_editar_movimento' id_movimento=item.id %}">Editar</a> -->
+                        <!-- <a href="#"
+                        onclick="confirmar_exclusao('#url_{{ item.id }}','Excluir movimento de {{ item.tipo_operacao }}')">Excluir</a>
+                    <input width="1px" type="hidden" id="url_{{ item.id }}"
+                        data-url="{% url 'core_excluir_movimento' id_movimento=item.id %}" /> -->
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <h3>Não há movimentos para o paciente até o momento</h3>
+                    </li>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Criar OS</button>
+    </form>
+</div>
+</br>
+<!-- <a href="{% url 'core_criar_movimentacao' id_paciente=id_paciente %}">+ [Criar Ordem de Serviço]</a> -->
+<input type=button class="btn" value="Voltar" onClick="window.history.back();return false;">
+</ul>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function confirmar_exclusao(url, msg) {
+        if (confirm(msg)) {
+            document.location.href = $(url).attr("data-url");;
+        }
+    }
+</script>
+{% endblock %}

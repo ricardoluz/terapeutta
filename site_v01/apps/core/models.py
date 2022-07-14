@@ -80,6 +80,7 @@ class TipoOperacao(models.Model):
 class OrdemServico(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, null=True)
     data_ordem = models.DateTimeField(null=True)
+    data_envio = models.DateTimeField(null=True)
     data_pagamento = models.DateTimeField(null=True)
 
     class Meta:

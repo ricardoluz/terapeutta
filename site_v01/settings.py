@@ -130,11 +130,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-BR'
 
+USE_TZ = True
 TIME_ZONE = 'America/Sao_Paulo'
+# TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
 
 # https://stackoverflow.com/questions/4876370/django-date-format-dd-mm-yyyy
 # DATE_INPUT_FORMATS = ('%d-%m-%Y','%Y-%m-%d')

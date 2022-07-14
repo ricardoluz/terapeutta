@@ -1,23 +1,26 @@
 """ core - Views """
 
-from operator import le
+
+import datetime
+import os
+from django.utils import timezone
 from django.forms import ValidationError, modelformset_factory
 import requests
 import json
-from django.forms import formset_factory
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.http import JsonResponse
 from django.contrib import messages
+from django.db.models import Q
 
 
 from ..autenticacao.decorators import allowed_users_v01
 from .decorators import terapeuta_eh_valido
 
 from .forms import OSSelecaoForm, TerapeutaFormCrispy, PacienteForm, MovimentacaoForm
-from .models import Terapeuta, Paciente, Movimentacao
+from .models import Terapeuta, Paciente, Movimentacao, OrdemServico
 
 from ..bibliotecas.validar_cpf import verificar_cpf
 
@@ -229,33 +232,59 @@ def os_selecionar_movimentos_tmp(request, id_paciente):
 
     return render(request, "core/os_selecionar_movimentos.html", context)
 
-
+@allowed_users_v01()
+@terapeuta_eh_valido
 def os_selecionar_movimentos(request, id_paciente):
+    OrdemSet = modelformset_factory(Movimentacao,OSSelecaoForm,extra=0)
+
     paciente = Paciente.objects.get(id=id_paciente)
-    movimentos = Movimentacao.objects.filter(paciente=id_paciente).order_by("data_hora")
+    os_aberta = OrdemServico.objects.filter(paciente=id_paciente, data_envio = None).order_by('data_ordem')
+    num_os = None
+    bln_existe_os = False
 
-    if request.method=='POST':
-        OrdemSet = modelformset_factory(Movimentacao,OSSelecaoForm,extra=0)
-        print('1....')
+    # Se existir um OS aberta, acrescentar dados a ela.
+    # 
+    if os_aberta:
+        num_os = os_aberta.all().values()[0]['id']
+        bln_existe_os = True
+        movimentos = Movimentacao.objects.filter(Q(paciente=id_paciente) & (Q(bln_selecionado=0) | Q(ordem_servico = num_os))).order_by("data_hora")
+    else:
+        movimentos = Movimentacao.objects.filter(paciente=id_paciente).filter(bln_selecionado=0).order_by("data_hora")
+
+
+    if request.method != 'POST':
+        formset = OrdemSet(queryset=movimentos)
+    else:
         formset = OrdemSet(request.POST)
-
+        itens_selecionados = []
         if formset.is_valid():
-            for form in formset:
-                print(form.cleaned_data.get('tipo_operacao'))
-                print(form.cleaned_data.get('data_hora'))
 
-                # if book_name:
-                    # pass
-                    # Book(name_book=book_name,author=author).save()
+            for form in formset:
+                if form.cleaned_data.get('bln_selecionado'):
+                    itens_selecionados.append(form.cleaned_data['id'].id)
+
+            if len(itens_selecionados) > 0 and bln_existe_os == False:
+                os_nova = OrdemServico(paciente=paciente, data_ordem= timezone.localtime())
+                os_nova.save()
+                num_os = os_nova.pk
+
+            #TODO: Verificar uma forma de executar através do formulário.
+            for tmp in movimentos:
+                if tmp.id in itens_selecionados:
+                    tmp.ordem_servico_id = num_os
+                    tmp.bln_selecionado = True
+                else:
+                    tmp.ordem_servico_id = None
+                    tmp.bln_selecionado = False
+                
+                tmp.save()
+
             return redirect("home")
             return render(request,'core/os_selecionar_movimentos_tmp.html',{'formset':formset})
-    else:
-
-        # Order = formset_factory(OSSelecaoForm, extra=3)
-        OrdemSet = modelformset_factory(Movimentacao,OSSelecaoForm,extra=0)
-        formset = OrdemSet(queryset=movimentos)
-
-    return render(request,'core/os_selecionar_movimentos_tmp.html',{'formset':formset})
+    
+    context = {"formset": formset, "nome_paciente": paciente.nome}
+    
+    return render(request,'core/os_selecionar_movimentos.html', context)
 
 # ----------------------------------
 # Views de verificacao.
