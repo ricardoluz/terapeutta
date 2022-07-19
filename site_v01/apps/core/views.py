@@ -20,7 +20,7 @@ from ..autenticacao.decorators import allowed_users_v01
 from .decorators import terapeuta_eh_valido
 
 from .forms import OSSelecaoForm, TerapeutaFormCrispy, PacienteForm, MovimentacaoForm
-from .models import Terapeuta, Paciente, Movimentacao, OrdemServico
+from .models import QryListaOrdensServico, Terapeuta, Paciente, Movimentacao, OrdemServico, QryMovimentacao
 
 from ..bibliotecas.validar_cpf import verificar_cpf
 
@@ -136,9 +136,10 @@ def excluir_paciente(request, id_paciente):
 def listar_movimentacoes(request, id_paciente):
 
     paciente = Paciente.objects.get(id=id_paciente)
+    movimentos = QryMovimentacao.objects.filter(paciente=id_paciente)
 
-    movimentos = Movimentacao.objects.filter(paciente=id_paciente).order_by("data_hora")
-    context = {"form": movimentos, "id_paciente": id_paciente}
+    context = {"form": movimentos}
+    context["id_paciente"] = id_paciente
     context["nome_paciente"] =  paciente.nome
 
     return render(request, "core/movimentos.html", context)
@@ -231,6 +232,23 @@ def os_selecionar_movimentos_tmp(request, id_paciente):
     context["nome_paciente"] =  paciente.nome
 
     return render(request, "core/os_selecionar_movimentos.html", context)
+
+
+@allowed_users_v01()
+@terapeuta_eh_valido
+def os_listar_ordensservico(request):
+    terapeuta=request.user.terapeuta
+    # paciente = Paciente.objects.get(id=id_paciente)
+    # ordens = QryListaOrdensServico.objects.filter(terapeuta_id = terapeuta)
+    ordens = QryListaOrdensServico.objects.all()
+
+    context = {"form": ordens}
+    print(ordens)
+    # context["id_paciente"] = id_paciente
+    # context["nome_paciente"] =  paciente.nome
+
+    return render(request, "core/os_listar_ordens.html", context)
+
 
 @allowed_users_v01()
 @terapeuta_eh_valido

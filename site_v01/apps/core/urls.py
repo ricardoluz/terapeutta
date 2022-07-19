@@ -21,6 +21,7 @@ from .views import (
     # ------------
     # Ordem de serviço
     os_selecionar_movimentos,
+    os_listar_ordensservico,
     #
     # ------------
     # Validações
@@ -78,6 +79,11 @@ urlpatterns = [
         "ordemservico/<int:id_paciente>",
         os_selecionar_movimentos,
         name="core_os_selecionar_movimentos",
+    ),
+        path(
+        "ordemservico",
+        os_listar_ordensservico,
+        name="core_listar_ordensservico",
     ),
 
 

@@ -102,3 +102,31 @@ class Movimentacao(models.Model):
         verbose_name = "Movimentacao"
         verbose_name_plural = "Movimentacoes"
 
+
+class QryMovimentacao(models.Model):
+    id = models.BigIntegerField(verbose_name='id', primary_key=True)
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, null=True)
+    tipo_operacao = models.ForeignKey(TipoOperacao, null=False, on_delete=models.CASCADE)
+    data_hora = models.DateTimeField(null=True)    
+    valor_mov = models.FloatField(null=True, blank=True)  # TODO: Rever este campo.
+    bln_selecionado = models.BooleanField(default=False)
+    ordem_servico = models.ForeignKey(OrdemServico,on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'qry_Movimentacao'
+
+
+class QryListaOrdensServico(models.Model):
+    id = models.BigIntegerField(verbose_name='id', primary_key=True)
+    terapeuta = models.ForeignKey(Terapeuta, on_delete=models.CASCADE)
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, null=True)
+    data_ordem = models.DateTimeField(null=True)
+    data_envio = models.DateTimeField(null=True)
+    nome_paciente = models.TextField(blank=True)
+    valor_total = models.FloatField(null=True, blank=True)
+    num_movimentos = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        managed = False
+        db_table = 'qry_lista_ordens_servico'
