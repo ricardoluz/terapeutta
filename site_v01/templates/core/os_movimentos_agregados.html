@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block header %}
-<h3>Ordens de serviço</h3>
+<h3>Movimentos para ordens de serviço</h3>
 {% endblock header %}
 
 {% block content %}
@@ -11,7 +11,6 @@
 <table class="table table-hover">
     <thead>
         <tr>
-            <th scope="col">Data</th>
             <th scope="col">Paciente</th>
             <th scope="col" style="text-align: right;">Valor (R$)</th>
             <th scope="col" style="text-align: right;">Núm. Movimentos</th>
@@ -20,19 +19,18 @@
     <tbody>
         {% for item in form %}
         <tr>
-            <th scope="row">{{ item.data_ordem|date:'d/m/Y'}}</th>
             <td>{{ item.nome_paciente }}</td>
             <td align="right">{{ item.valor_total}}</td>
             <td align="right">{{ item.num_movimentos}}</td>
 
             <td>
-                <!-- <a href="{% url 'core_os_selecionar_movimentos' id_paciente=item.id %}">[ Criar Ordem Servico]</a>
-                &nbsp;|&nbsp;    -->
-                <a href="{% url 'core_editar_movimento' id_movimento=item.id %}">Editar</a>
+                <a href="{% url 'core_os_selecionar_movimentos' id_paciente=item.paciente_id %}">[ Criar Ordem Servico]</a>
+                &nbsp;|&nbsp;
+                <!-- <a href="{% url 'core_editar_movimento' id_movimento=item.id %}">Editar</a>
                 <a href="#"
                     onclick="confirmar_exclusao('#url_{{ item.id }}','Excluir movimento de {{ item.tipo_operacao }}')">Excluir</a>
                 <input width="1px" type="hidden" id="url_{{ item.id }}"
-                    data-url="{% url 'core_excluir_movimento' id_movimento=item.id %}" />
+                    data-url="{% url 'core_excluir_movimento' id_movimento=item.id %}" /> -->
             </td>
         </tr>
         {% endfor %}

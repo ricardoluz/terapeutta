@@ -1,5 +1,5 @@
 """ Modelos """
-from tkinter import CASCADE, N
+# from tkinter import CASCADE, N
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -79,6 +79,7 @@ class TipoOperacao(models.Model):
 
 class OrdemServico(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, null=True)
+    # terapeuta = models.ForeignKey(Terapeuta, on_delete=models.CASCADE)
     data_ordem = models.DateTimeField(null=True)
     data_envio = models.DateTimeField(null=True)
     data_pagamento = models.DateTimeField(null=True)
@@ -90,6 +91,7 @@ class OrdemServico(models.Model):
 
 
 class Movimentacao(models.Model):
+    terapeuta = models.ForeignKey(Terapeuta, on_delete=models.CASCADE)
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, null=True)
     tipo_operacao = models.ForeignKey(TipoOperacao, null=False, on_delete=models.CASCADE)
     data_hora = models.DateTimeField(null=True)
@@ -114,7 +116,20 @@ class QryMovimentacao(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'qry_Movimentacao'
+        db_table = 'qry_movimentacao'
+
+
+class QryMovimentacaoAgregada(models.Model):
+    id = models.BigIntegerField(verbose_name='id', primary_key=True)
+    terapeuta_id = models.PositiveBigIntegerField()
+    paciente_id = models.PositiveBigIntegerField()
+    nome_paciente = models.CharField(max_length=50, blank=True)
+    valor_total = models.FloatField(null=True, blank=True)
+    num_movimentos = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        managed = False
+        db_table = 'qry_movimentacao_agregada'
 
 
 class QryListaOrdensServico(models.Model):

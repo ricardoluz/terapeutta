@@ -1,6 +1,4 @@
 """ core - Views """
-
-
 import datetime
 import os
 from django.utils import timezone
@@ -20,8 +18,15 @@ from ..autenticacao.decorators import allowed_users_v01
 from .decorators import terapeuta_eh_valido
 
 from .forms import OSSelecaoForm, TerapeutaFormCrispy, PacienteForm, MovimentacaoForm
-from .models import QryListaOrdensServico, Terapeuta, Paciente, Movimentacao, OrdemServico, QryMovimentacao
-
+from .models import (
+    QryListaOrdensServico, 
+    Terapeuta,
+    Paciente,
+    Movimentacao,
+    OrdemServico,
+    QryMovimentacao,
+    QryMovimentacaoAgregada
+)
 from ..bibliotecas.validar_cpf import verificar_cpf
 
 
@@ -124,15 +129,14 @@ def editar_paciente_v01(request, id_paciente):
 @allowed_users_v01()
 @terapeuta_eh_valido
 def excluir_paciente(request, id_paciente):
-    print('xxx')
     query = Paciente.objects.get(id=id_paciente)
-
     query.delete()
 
     return redirect(request.META['HTTP_REFERER'])
 
 
 @allowed_users_v01()
+@terapeuta_eh_valido
 def listar_movimentacoes(request, id_paciente):
 
     paciente = Paciente.objects.get(id=id_paciente)
@@ -146,6 +150,7 @@ def listar_movimentacoes(request, id_paciente):
 
 
 @allowed_users_v01()
+@terapeuta_eh_valido
 def criar_movimentacao(request, id_paciente):
     """Cria uma movimentacao"""
 
@@ -157,17 +162,20 @@ def criar_movimentacao(request, id_paciente):
 
         if form.is_valid():
             movimentacao = form.save(commit=False)
-            # paciente = Paciente.objects.get(id=id_paciente)
-            # movimentacao.paciente = request.user.terapeuta.paciente
+
             movimentacao.paciente = paciente
+            movimentacao.terapeuta_id = request.user.terapeuta.id
+
             movimentacao.save()
+
             return HttpResponseRedirect(reverse("core_listar_pacientes"))
 
     else:
 
         movimentacao = None
         form = MovimentacaoForm(instance=movimentacao)
-        # form.base_fields['valor_mov'].initial = paciente.valor_padrao
+        
+        # Ler o valor padrão da consulta
         form.fields['valor_mov'].initial = paciente.valor_padrao
 
     context = {"form": form}
@@ -199,13 +207,14 @@ def editar_movimento(request, id_movimento):
 
 
 @allowed_users_v01()
-# @terapeuta_eh_valido
+@terapeuta_eh_valido
 def excluir_movimento(request, id_movimento):
     query = Movimentacao.objects.get(id=id_movimento)
 
     query.delete()
 
     return redirect(request.META['HTTP_REFERER'])
+
 
 @allowed_users_v01()
 def os_selecionar_movimentos_tmp(request, id_paciente):
@@ -235,17 +244,22 @@ def os_selecionar_movimentos_tmp(request, id_paciente):
 
 
 @allowed_users_v01()
-@terapeuta_eh_valido
+def os_listar_movimentos_agregados(request):
+    """Listar os movimentos para criação de OS"""
+
+    movimentos_agregados = QryMovimentacaoAgregada.objects.filter(terapeuta_id=request.user.terapeuta.id)
+
+    context = {"form": movimentos_agregados}
+    return render(request, "core/os_movimentos_agregados.html", context)
+
+
+@allowed_users_v01()
+# @terapeuta_eh_valido
 def os_listar_ordensservico(request):
     terapeuta=request.user.terapeuta
-    # paciente = Paciente.objects.get(id=id_paciente)
-    # ordens = QryListaOrdensServico.objects.filter(terapeuta_id = terapeuta)
-    ordens = QryListaOrdensServico.objects.all()
+    ordens = QryListaOrdensServico.objects.filter(terapeuta_id = terapeuta.id)
 
     context = {"form": ordens}
-    print(ordens)
-    # context["id_paciente"] = id_paciente
-    # context["nome_paciente"] =  paciente.nome
 
     return render(request, "core/os_listar_ordens.html", context)
 

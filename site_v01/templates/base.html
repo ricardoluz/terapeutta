@@ -48,6 +48,16 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'core_listar_ordensservico' %}">Ordem de Serviço</a>
           </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Ordem de Serviço
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{% url 'core_os_listar_movimentos_agregados' %}">Criar / Enviar</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Editar / Conciliar</a>
+            </div>
+          </li>
           <!-- <li class="nav-item">
               <a class="nav-link" href="{ url 'secret2' %}">Secret Page 2</a>
             </li> -->

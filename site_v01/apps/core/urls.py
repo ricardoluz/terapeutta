@@ -20,6 +20,7 @@ from .views import (
     #
     # ------------
     # Ordem de serviço
+    os_listar_movimentos_agregados,
     os_selecionar_movimentos,
     os_listar_ordensservico,
     #
@@ -75,6 +76,11 @@ urlpatterns = [
     #
     # OrdemServico --------------------------------------------
     #
+    path(
+        "movimentos_agregados/",
+        os_listar_movimentos_agregados,
+        name="core_os_listar_movimentos_agregados",
+    ),
     path(
         "ordemservico/<int:id_paciente>",
         os_selecionar_movimentos,
